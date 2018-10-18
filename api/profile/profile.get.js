@@ -1,5 +1,3 @@
-var async = require('async');
-
 var Profile = require('../models/profile');
 var admin = require("firebase-admin");
 
@@ -15,6 +13,6 @@ module.exports = function(req, res){
 		user['status'] = results[0].status;
 		res.json(user);
 	}).catch(function(err){
-		res.json({error: err});
+		res.status(500).json({error: err});
 	});
 };
