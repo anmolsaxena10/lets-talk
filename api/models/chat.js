@@ -7,6 +7,5 @@ var Message = require('./message');
 // set up a mongoose model and pass it using module.exports
 module.exports = mongoose.model('Chat', new Schema({
 	user1: {type: Schema.Types.ObjectId, ref: 'Profile'},
-	user2: {type: Schema.Types.ObjectId, ref: 'Profile'},
-	messages: [{type: Schema.Types.ObjectId, ref: 'Message'}]
+	user2: {type: Schema.Types.ObjectId, ref: 'Profile'}
 }));

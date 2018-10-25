@@ -5,6 +5,8 @@ var messageRouter = require('./message/index');
 var chatRouter = require('./chat/index');
 var admin = require('firebase-admin');
 
+var Profile = require('./models/profile');
+
 var router = express.Router();
 
 router.use(function(req, res, next){
@@ -20,9 +22,11 @@ router.use(function(req, res, next){
 
 		if(authToken){
 			admin.auth().verifyIdToken(authToken).then(function (decoded) {
-				req.userId = decoded.uid;
-				req.profileId = '5b800e15557a0515fabb92d7';
-				next();
+				req.user = decoded;
+				Profile.findOne({ uid: decoded.uid }).then(function(result){
+					req.profile = result;
+					next();
+				});
 			}).catch(function (err) {
 				return req.json(err);
 			});

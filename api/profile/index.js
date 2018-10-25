@@ -6,7 +6,7 @@ var profileUpdate = require('./profile.update');
 
 var router = express.Router();
 
-router.get('/:id', profileGet);
+router.get('/:type/:id', profileGet);
 router.post('/', profilePost);
 router.put('/:id', profileUpdate);
 router.delete('/:id', profileDelete);

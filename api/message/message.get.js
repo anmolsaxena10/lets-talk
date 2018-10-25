@@ -3,8 +3,8 @@ var Profile = require('../models/profile');
 
 module.exports = function(req, res){
 	Message.find({
-		'_id': {$in: req.params.id.split(',')}
-	}).populate('Profile').exec(function(err, messages){
+		'chat': req.params.id
+	}).populate('to').populate('from').populate('chat').exec(function(err, messages){
 		if(err) throw err;
 		res.json(messages);
 	});
