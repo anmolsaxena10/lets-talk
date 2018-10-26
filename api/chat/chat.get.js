@@ -24,7 +24,7 @@ module.exports = function(req, res){
 				console.log(err);
 				return res.status(500).json({ error: err });
 			}
-			console.log(chats[0].user1);
+			// console.log(chats[0].user1);
 			res.json(chats);
 		});
 	}

@@ -15,6 +15,7 @@ var redisClient = require('./lib/redis');
 var socket = require('socket.io');
 var redisAdapter = require('socket.io-redis');
 
+var helper = require('./lib/functions');
 // =======================
 // configuration =========
 // =======================
@@ -59,10 +60,41 @@ redisClient().then(function(redis){
 	io.adapter(redisAdapter(db_config.redis));
 
 	io.on('connection', function(socket){
-		console.log(socket.handshake.query.user + ' connected');
+		let user = JSON.parse(socket.handshake.query.user);
+		console.log(user.displayName + ' connected');
+
+		redis.subscribe(user.profile._id + ":channel");
+
+		//Pass old messages which were not persisted but also not read
+		helper.fetchOfflineMessages(user).then(
+			msgs => {
+				console.log("Offline Msgs: " + msgs[0]);
+				if (msgs != undefined) {
+					msgs.forEach(mess => {
+						socket.emit("message", JSON.parse(mess));
+					});
+				}
+			},
+			err => {
+				console.log(err);
+			}
+		);
+		socket.emit('message', {'hello': 'hiii'});
+		socket.on('message', function(data){
+			console.log("messsage");
+		});
+
+		redis.on("message", (channel, message) => {
+			let chName = user.profile._id + ":channel";
+			if (channel === chName) {
+				socket.emit("message", JSON.parse(message));
+			} else if (channel === "activeUsers") {
+				socket.emit("users", JSON.parse(message));
+			}
+		});
 
 		socket.on('disconnect', function () {
-			console.log(socket.handshake.query.user + ' disconnected');
+			console.log(user.displayName + ' disconnected');
 		});
 	});
 });

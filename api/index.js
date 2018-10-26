@@ -28,7 +28,7 @@ router.use(function(req, res, next){
 					next();
 				});
 			}).catch(function (err) {
-				return req.json(err);
+				return res.json(err);
 			});
 		}
 		else{
