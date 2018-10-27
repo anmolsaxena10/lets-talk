@@ -67,9 +67,9 @@ redisClient().then(function(redis){
 		redis.subscribe(user.profile._id + ":channel");
 
 		//Pass old messages which were not persisted but also not read
-		helper.fetchOfflineMessages(user).then(
+		helper.fetchMessages(user).then(
 			msgs => {
-				console.log("Offline Msgs: " + msgs[0]);
+				//console.log("Offline Msgs: " + msgs[0]);
 				if (msgs != undefined) {
 					msgs.forEach(mess => {
 						socket.emit("message", JSON.parse(mess));
@@ -80,9 +80,10 @@ redisClient().then(function(redis){
 				console.log(err);
 			}
 		);
-		socket.emit('message', {'hello': 'hiii'});
+		// socket.emit('message', {'hello': 'hiii'});
 		socket.on('message', function(data){
 			helper.publishMessage(data);
+			socket.emit("message", data);
 			console.log("messsage");
 		});
 
