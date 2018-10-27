@@ -63,6 +63,7 @@ redisClient().then(function(redis){
 		let user = JSON.parse(socket.handshake.query.user);
 		console.log(user.displayName + ' connected');
 
+		helper.addActiveUser(user);
 		redis.subscribe(user.profile._id + ":channel");
 
 		//Pass old messages which were not persisted but also not read
@@ -81,6 +82,7 @@ redisClient().then(function(redis){
 		);
 		socket.emit('message', {'hello': 'hiii'});
 		socket.on('message', function(data){
+			helper.publishMessage(data);
 			console.log("messsage");
 		});
 
@@ -88,12 +90,12 @@ redisClient().then(function(redis){
 			let chName = user.profile._id + ":channel";
 			if (channel === chName) {
 				socket.emit("message", JSON.parse(message));
-			} else if (channel === "activeUsers") {
-				socket.emit("users", JSON.parse(message));
 			}
 		});
 
 		socket.on('disconnect', function () {
+			helper.removeActiveUser(user);
+			helper.persistMessages(user);
 			console.log(user.displayName + ' disconnected');
 		});
 	});
